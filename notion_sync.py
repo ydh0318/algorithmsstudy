@@ -103,6 +103,11 @@ def check_duplicate_notion(solver, problem_name):
 
 def add_to_notion(solver, platform, difficulty, problem_name, code_url):
     """노션 데이터베이스에 데이터 등록"""
+    # 한국 시간(KST, UTC+9) 기준 날짜 계산
+    from datetime import datetime, timedelta, timezone
+    kst = timezone(timedelta(hours=9))
+    current_date = datetime.now(kst).strftime("%Y-%m-%d")
+
     body = {
         "parent": { "database_id": NOTION_DATABASE_ID },
         "properties": {
@@ -119,6 +124,9 @@ def add_to_notion(solver, platform, difficulty, problem_name, code_url):
             },
             "플랫폼": {
                 "select": { "name": platform }
+            },
+            "날짜": {
+                "date": { "start": current_date }
             },
             "코드 링크": {
                 "url": code_url
