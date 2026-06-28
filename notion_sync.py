@@ -60,7 +60,7 @@ def send_discord_message(embed_data):
     headers = {
         "Authorization": f"Bot {DISCORD_BOT_TOKEN}",
         "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        "User-Agent": "DiscordBot (https://github.com/ydh0318/algorithmsstudy, 1.0.0)"
     }
     body = {
         "embeds": [embed_data]
@@ -168,6 +168,9 @@ def parse_file_path(filepath):
 
 def decode_git_path(path):
     """Git이 이스케이프한 옥탈 문자열(\\354\\240\\225...)을 한글로 디코딩합니다."""
+    # 깃허브가 인코딩을 한 번 더 이스케이프해서 더블 백슬래시가 된 경우 싱글 백슬래시로 치환
+    path = path.replace('\\\\', '\\')
+    
     if path.startswith('\\"') and path.endswith('\\"'):
         path = path[2:-2]
     elif path.startswith('"') and path.endswith('"'):

@@ -62,7 +62,7 @@ def send_discord_message(embed_data):
     headers = {
         "Authorization": f"Bot {DISCORD_BOT_TOKEN}",
         "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        "User-Agent": "DiscordBot (https://github.com/ydh0318/algorithmsstudy, 1.0.0)"
     }
     body = {
         "embeds": [embed_data]
