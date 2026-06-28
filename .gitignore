@@ -1,0 +1,15 @@
+# API Keys and Secrets
+.env
+
+# OS Files
+.DS_Store
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local config
+mcp_config.json
+create_notion_db.py
+list_discord_channels.py
