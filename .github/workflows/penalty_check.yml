@@ -1,0 +1,30 @@
+name: Weekly Penalty Check
+
+on:
+  schedule:
+    # 매주 일요일 KST 22시 (UTC 13시)에 실행
+    - cron: '0 13 * * 0'
+  # 필요할 때 깃허브 웹에서 수동으로 실행 가능하게 설정
+  workflow_dispatch:
+
+jobs:
+  check-penalty:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run Penalty Check Script
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: ${{ secrets.DISCORD_CHANNEL_ID }}
+        run: |
+          python penalty_check.py
