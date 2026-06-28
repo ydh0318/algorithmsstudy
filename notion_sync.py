@@ -191,11 +191,13 @@ def parse_file_path(filepath):
                 break
                 
         # 플랫폼 매핑 보정
-        platform_clean = "백준"
+        platform_clean = platform
         if "프로그래머스" in platform:
             platform_clean = "프로그래머스"
         elif "leetcode" in platform.lower():
             platform_clean = "리트코드"
+        elif "백준" in platform:
+            platform_clean = "백준"
             
         return {
             "solver": solver,
