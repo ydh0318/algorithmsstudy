@@ -168,12 +168,28 @@ def parse_file_path(filepath):
 
 def decode_git_path(path):
     """Git이 이스케이프한 옥탈 문자열(\\354\\240\\225...)을 한글로 디코딩합니다."""
-    # 앞뒤 따옴표 제거
-    if path.startswith('"') and path.endswith('"'):
+    if path.startswith('\\"') and path.endswith('\\"'):
+        path = path[2:-2]
+    elif path.startswith('"') and path.endswith('"'):
         path = path[1:-1]
+        
+    path = path.replace('\\(', '(').replace('\\)', ')')
+    
+    # 8진수 백슬래시 이스케이프 디코딩 (예: \354\240\225 -> 정)
+    matches = list(re.finditer(r'\\([0-7]{3})', path))
+    if not matches:
+        return path
+        
+    res_bytes = bytearray()
+    last_idx = 0
+    for m in matches:
+        res_bytes.extend(path[last_idx:m.start()].encode('utf-8'))
+        res_bytes.append(int(m.group(1), 8))
+        last_idx = m.end()
+    res_bytes.extend(path[last_idx:].encode('utf-8'))
+    
     try:
-        # 옥탈/유니코드 이스케이프 해제 후 UTF-8로 변환
-        return path.encode().decode('unicode_escape').encode('latin1').decode('utf-8')
+        return res_bytes.decode('utf-8')
     except Exception:
         return path
 
@@ -182,19 +198,13 @@ def main():
         print("노션 설정값(NOTION_API_KEY, NOTION_DATABASE_ID)이 부족합니다.")
         return
 
-    # 변형된 파일 목록 파싱 (GitHub Actions로부터 전달받은 JSON 파싱)
-    files = []
-    try:
-        # JSON에 포함된 잘못된 이스케이프(예: \() 제거하여 파싱 성공률을 높임
-        cleaned_json = re.sub(r'\\([^"\\/bfnrtu])', r'\1', ALL_CHANGED_FILES)
-        raw_files = json.loads(cleaned_json)
-        # 각 파일 경로에 디코딩 적용
-        files = [decode_git_path(f) for f in raw_files]
-    except Exception as je:
-        print(f"JSON 파싱 실패 ({je}), 공백 분할 시도")
-        # 공백 구분 문자열일 경우 분할
+    # 변형된 파일 목록 파싱 (정규식을 통해 JSON 이스케이프 버그와 무관하게 텍스트 추출)
+    raw_files = re.findall(r'"((?:[^"\\]|\\.)*)"', ALL_CHANGED_FILES)
+    if not raw_files:
+        # 백업: 공백 분할
         raw_files = [f.strip() for f in ALL_CHANGED_FILES.split() if f.strip()]
-        files = [decode_git_path(f) for f in raw_files]
+        
+    files = [decode_git_path(f) for f in raw_files]
 
     print(f"감지된 변경 파일 목록: {files}")
 
