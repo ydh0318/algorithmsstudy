@@ -270,8 +270,10 @@ def main():
                 continue
             processed_problems.append(dup_key)
             
-            # 깃허브 코드 URL 생성
-            code_url = f"https://github.com/{GITHUB_REPOSITORY}/blob/{GITHUB_SHA}/{filepath}"
+            # 깃허브 코드 URL 생성 (공백 및 특수문자 URL 인코딩 처리)
+            import urllib.parse
+            encoded_filepath = urllib.parse.quote(filepath, safe='/')
+            code_url = f"https://github.com/{GITHUB_REPOSITORY}/blob/{GITHUB_SHA}/{encoded_filepath}"
             
             # 1. 중복 체크
             if check_duplicate_notion(solver, problem_name):
