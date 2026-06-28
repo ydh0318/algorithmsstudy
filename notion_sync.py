@@ -107,17 +107,22 @@ def get_platform_icon(platform):
     if "백준" in p:
         return {
             "type": "external",
-            "external": { "url": "https://d2gd6pc034wcta.cloudfront.net/images/logo@2x.png" }
+            "external": { "url": "https://img.shields.io/badge/Baekjoon-0078EC?style=flat&logo=Web&logoColor=white" }
         }
     elif "프로그래머스" in p:
         return {
             "type": "external",
-            "external": { "url": "https://avatars.githubusercontent.com/u/38072551?s=200&v=4" }
+            "external": { "url": "https://img.shields.io/badge/Programmers-000333?style=flat&logo=Codeforces&logoColor=white" }
         }
     elif "리트코드" in p or "leetcode" in p:
         return {
             "type": "external",
-            "external": { "url": "https://avatars.githubusercontent.com/u/18742111?s=200&v=4" }
+            "external": { "url": "https://avatars.githubusercontent.com/u/18742111?v=4" }
+        }
+    elif "정올" in p or "jungol" in p:
+        return {
+            "type": "external",
+            "external": { "url": "https://img.shields.io/badge/JUNGOL-ED1C24?style=flat&logo=codeforces&logoColor=white" }
         }
     elif "swea" in p or "expert" in p:
         return {
@@ -125,7 +130,7 @@ def get_platform_icon(platform):
             "emoji": "🔵"
         }
     else:
-        # 정올 또는 기타 플랫폼
+        # 기타 플랫폼
         return {
             "type": "emoji",
             "emoji": "💻"
