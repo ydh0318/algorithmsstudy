@@ -101,6 +101,36 @@ def check_duplicate_notion(solver, problem_name):
         return True
     return False
 
+def get_platform_icon(platform):
+    """플랫폼 이름에 맞춰 페이지 아이콘(공식 로고 URL 또는 이모지)을 반환합니다."""
+    p = platform.lower()
+    if "백준" in p:
+        return {
+            "type": "external",
+            "external": { "url": "https://d2gd6pc034wcta.cloudfront.net/images/logo@2x.png" }
+        }
+    elif "프로그래머스" in p:
+        return {
+            "type": "external",
+            "external": { "url": "https://avatars.githubusercontent.com/u/38072551?s=200&v=4" }
+        }
+    elif "리트코드" in p or "leetcode" in p:
+        return {
+            "type": "external",
+            "external": { "url": "https://avatars.githubusercontent.com/u/18742111?s=200&v=4" }
+        }
+    elif "swea" in p or "expert" in p:
+        return {
+            "type": "emoji",
+            "emoji": "🔵"
+        }
+    else:
+        # 정올 또는 기타 플랫폼
+        return {
+            "type": "emoji",
+            "emoji": "💻"
+        }
+
 def add_to_notion(solver, platform, difficulty, problem_name, code_url):
     """노션 데이터베이스에 데이터 등록"""
     # 한국 시간(KST, UTC+9) 기준 날짜 계산
@@ -110,6 +140,7 @@ def add_to_notion(solver, platform, difficulty, problem_name, code_url):
 
     body = {
         "parent": { "database_id": NOTION_DATABASE_ID },
+        "icon": get_platform_icon(platform), # 플랫폼별 아이콘(로고) 자동 설정
         "properties": {
             "문제 이름": {
                 "title": [
