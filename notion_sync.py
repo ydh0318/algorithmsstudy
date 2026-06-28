@@ -166,17 +166,35 @@ def parse_file_path(filepath):
         }
     return None
 
+def decode_git_path(path):
+    """Git이 이스케이프한 옥탈 문자열(\\354\\240\\225...)을 한글로 디코딩합니다."""
+    # 앞뒤 따옴표 제거
+    if path.startswith('"') and path.endswith('"'):
+        path = path[1:-1]
+    try:
+        # 옥탈/유니코드 이스케이프 해제 후 UTF-8로 변환
+        return path.encode().decode('unicode_escape').encode('latin1').decode('utf-8')
+    except Exception:
+        return path
+
 def main():
     if not NOTION_API_KEY or not NOTION_DATABASE_ID:
         print("노션 설정값(NOTION_API_KEY, NOTION_DATABASE_ID)이 부족합니다.")
         return
 
     # 변형된 파일 목록 파싱 (GitHub Actions로부터 전달받은 JSON 파싱)
+    files = []
     try:
-        files = json.loads(ALL_CHANGED_FILES)
-    except json.JSONDecodeError:
+        # JSON에 포함된 잘못된 이스케이프(예: \() 제거하여 파싱 성공률을 높임
+        cleaned_json = re.sub(r'\\([^"\\/bfnrtu])', r'\1', ALL_CHANGED_FILES)
+        raw_files = json.loads(cleaned_json)
+        # 각 파일 경로에 디코딩 적용
+        files = [decode_git_path(f) for f in raw_files]
+    except Exception as je:
+        print(f"JSON 파싱 실패 ({je}), 공백 분할 시도")
         # 공백 구분 문자열일 경우 분할
-        files = [f.strip() for f in ALL_CHANGED_FILES.split() if f.strip()]
+        raw_files = [f.strip() for f in ALL_CHANGED_FILES.split() if f.strip()]
+        files = [decode_git_path(f) for f in raw_files]
 
     print(f"감지된 변경 파일 목록: {files}")
 

@@ -16,6 +16,9 @@ jobs:
         with:
           fetch-depth: 0 # 모든 커밋 히스토리를 가져와 변경 파일 감지가 정확해집니다.
 
+      - name: Disable Git path escaping (for Korean characters)
+        run: git config --global core.quotepath false
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
